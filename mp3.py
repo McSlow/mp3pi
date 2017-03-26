@@ -31,7 +31,7 @@ import re
 #from networking import NetworkManagerWrapper
 from nmcli import nmcli
 from radiostations import RadioStations
-#from audio import AlsaInterface
+from audio import AlsaInterface
 from screensaver import Rpi_ScreenSaver
 
 reload(sys)
@@ -83,10 +83,10 @@ class Mp3PiAppLayout(Screen):
 
     self.ids['search_results_list'].adapter.bind(on_selection_change=self.change_selection)
 
-    #self.ids.volume_slider.value = Alsa.get_mixer("", {})
+    self.ids.volume_slider.value = Alsa.get_mixer("", {})
 
     # XXX validate!!
-    self.ids.volume_slider.value = int(subprocess.check_output(["pulseaudio-ctl", "full-status"]).split(" ")[0])
+    #self.ids.volume_slider.value = 0# int(subprocess.check_output(["pulseaudio-ctl", "full-status"]).split(" ")[0])
 
 
     self.statusthread = threading.Thread(target=self.status_thread)
@@ -97,8 +97,8 @@ class Mp3PiAppLayout(Screen):
   def change_volume(self, args):
     #os.system("amixer set Master %s%%" % int(args))
     #os.system("pactl set-sink-volume  bluez_sink.0C_A6_94_E3_76_DA %s%%" % int(args))
-    #Alsa.set_mixer("", int(args), {})
-    os.system("pulseaudio-ctl set %s%%" % int(args))
+    Alsa.set_mixer("", int(args), {})
+    #os.system("pulseaudio-ctl set %s%%" % int(args))
 
   def change_selection(self, args):
     if args.selection:
@@ -135,7 +135,7 @@ class Mp3PiAppLayout(Screen):
   def infinite_loop(self, url):
     iteration = 0
 
-    self.proc = subprocess.Popen(["mpg123", "-o", "pulse", "-@", url], stderr=subprocess.PIPE, bufsize = 0)
+    self.proc = subprocess.Popen(["mpg123","-o", "alsa",  "-@", url], stderr=subprocess.PIPE, bufsize = 0)
   
     line = []
     while True:
@@ -458,7 +458,7 @@ if __name__ == "__main__":
 
   #Network = NetworkManagerWrapper()
   NMCLI = nmcli() 
-  #Alsa = AlsaInterface()
+  Alsa = AlsaInterface()
   Stations = RadioStations()
   ScreenSaver = Rpi_ScreenSaver()
 

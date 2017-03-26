@@ -8,7 +8,7 @@ class AlsaInterface():
   def __init__(self): # picks first mixer and set as default
     all_mixers = self.list_mixers()
     self.mixer = all_mixers[0]
-    Logger.info("AlsaInterface: Setting default mixer to: " + self.mixer)
+    #Logger.info("AlsaInterface: Setting default mixer to: " + self.mixer)
 
   def list_mixers(self, **kwargs):
     return(alsaaudio.mixers(**kwargs))
