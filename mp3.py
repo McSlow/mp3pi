@@ -14,8 +14,8 @@ from kivy.properties import NumericProperty
 from kivy.graphics import Color
 from kivy.uix.screenmanager import ScreenManager, Screen, SwapTransition, FadeTransition
 from kivy.uix.settings import SettingsWithTabbedPanel
-from kivy.config import Config
 
+from kivy.config import Config
 import pdb
 
 import threading
@@ -27,6 +27,9 @@ import json
 import pprint
 import signal
 import re
+
+#GPIO Stuff
+import RPi.GPIO as GPIO
 
 #from networking import NetworkManagerWrapper
 from nmcli import nmcli
@@ -299,6 +302,16 @@ class Mp3PiAppLayout(Screen):
 
 class Mp3PiApp(App):
   global last_activity_time, ConfigObject
+  # initialize GPIO stuff
+  GPIO.setmode(GPIO.BOARD)
+  GPIO_PIR = 7
+  GPIO.setup(GPIO_PIR,GPIO.IN)
+  def my_callback(channel):
+    Logger.debug("Presence detector triggered!")
+    global last_activity_time
+    last_activity_time = time.time()
+
+  GPIO.add_event_detect(GPIO_PIR, GPIO.RISING, callback=my_callback, bouncetime=300)
 
   def build_config(self, config):
     config.setdefaults('General', {'screensaver': "60"})
